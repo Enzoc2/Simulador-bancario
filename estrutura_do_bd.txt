@@ -1,0 +1,158 @@
+-- =========================
+-- TABELA USUARIO
+-- =========================
+CREATE TABLE Usuario (
+    ID_Cliente INT NOT NULL,
+    CPF INT NOT NULL,
+    Nome VARCHAR(100) NOT NULL,
+    Telefone INT NOT NULL,
+    CONSTRAINT PK_Usuario PRIMARY KEY (ID_Cliente),
+    CONSTRAINT UK_CPF UNIQUE (CPF),
+    CONSTRAINT UK_Telefone UNIQUE (Telefone)
+);
+
+-- =========================
+-- TABELA CONTA
+-- =========================
+CREATE TABLE Conta (
+    ID_Numero INT NOT NULL,
+    Saldo INT NOT NULL,
+    ID_Cliente INT NOT NULL,
+    CONSTRAINT PK_Conta PRIMARY KEY (ID_Numero),
+    CONSTRAINT UK_Saldo UNIQUE (Saldo),
+    CONSTRAINT FK_UsuarioConta FOREIGN KEY (ID_Cliente)
+        REFERENCES Usuario (ID_Cliente) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- TIPOS DE CONTA (especialização)
+-- =========================
+CREATE TABLE Corrente (
+    ID_Numero INT NOT NULL,
+    CONSTRAINT PK_Corrente PRIMARY KEY (ID_Numero),
+    CONSTRAINT FK_ContaCorrente FOREIGN KEY (ID_Numero)
+        REFERENCES Conta (ID_Numero) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Salario (
+    ID_Numero INT NOT NULL,
+    Contratante VARCHAR(100) NOT NULL,
+    CONSTRAINT PK_Salario PRIMARY KEY (ID_Numero),
+    CONSTRAINT FK_ContaSalario FOREIGN KEY (ID_Numero)
+        REFERENCES Conta (ID_Numero) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Poupanca (
+    ID_Numero INT NOT NULL,
+    Rentabilidade INT NOT NULL,
+    CONSTRAINT PK_Poupanca PRIMARY KEY (ID_Numero),
+    CONSTRAINT FK_ContaPoupanca FOREIGN KEY (ID_Numero)
+        REFERENCES Conta (ID_Numero) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- CARTÃO
+-- =========================
+CREATE TABLE Cartao (
+    ID_CardNumber INT NOT NULL,
+    ID_Numero INT NOT NULL,
+    CONSTRAINT PK_Cartao PRIMARY KEY (ID_CardNumber),
+    CONSTRAINT FK_ContaCartao FOREIGN KEY (ID_Numero)
+        REFERENCES Conta (ID_Numero) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Debito (
+    ID_CardNumber INT NOT NULL,
+    CONSTRAINT PK_Debito PRIMARY KEY (ID_CardNumber),
+    CONSTRAINT FK_DebitoCartao FOREIGN KEY (ID_CardNumber)
+        REFERENCES Cartao (ID_CardNumber) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Credito (
+    ID_CardNumber INT NOT NULL,
+    Vencimento_Cartao DATE NOT NULL,
+    Limite NUMERIC(100,2) NOT NULL,
+    CONSTRAINT PK_Credito PRIMARY KEY (ID_CardNumber),
+    CONSTRAINT FK_CreditoCartao FOREIGN KEY (ID_CardNumber)
+        REFERENCES Cartao (ID_CardNumber) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- DEPÓSITO
+-- =========================
+CREATE TABLE Deposito (
+    ID_Pag INT NOT NULL,
+    Valor_Pag INT NOT NULL,
+    Status_Pag BOOLEAN NOT NULL,
+    Data_Pag DATE NOT NULL,
+    CONSTRAINT PK_Deposito PRIMARY KEY (ID_Pag)
+);
+
+-- =========================
+-- FATURA (ligada a Depósito)
+-- =========================
+CREATE TABLE Fatura (
+    ID_Pag INT NOT NULL,
+    CONSTRAINT PK_Fatura PRIMARY KEY (ID_Pag),
+    CONSTRAINT FK_DepositoFatura FOREIGN KEY (ID_Pag)
+        REFERENCES Deposito (ID_Pag) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- COMPRAS
+-- =========================
+CREATE TABLE Compras (
+    ID_Compra INT NOT NULL,
+    ID_CardNumber INT NOT NULL,
+    ID_Pag INT NOT NULL, -- FK para Fatura
+    Data_Compra DATE NOT NULL,
+    Valor NUMERIC(100,2) NOT NULL,
+    Estabelecimento VARCHAR(150) NOT NULL,
+    CONSTRAINT PK_Compras PRIMARY KEY (ID_Compra),
+    CONSTRAINT FK_CartaoCompras FOREIGN KEY (ID_CardNumber)
+        REFERENCES Cartao (ID_CardNumber) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT FK_FaturaCompras FOREIGN KEY (ID_Pag)
+        REFERENCES Fatura (ID_Pag) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE A_Prazo (
+    ID_Compra INT NOT NULL,
+    CONSTRAINT PK_A_Prazo PRIMARY KEY (ID_Compra),
+    CONSTRAINT FK_ComprasPrazo FOREIGN KEY (ID_Compra)
+        REFERENCES Compras (ID_Compra) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE A_Vista (
+    ID_Compra INT NOT NULL,
+    CONSTRAINT PK_A_Vista PRIMARY KEY (ID_Compra),
+    CONSTRAINT FK_ComprasVista FOREIGN KEY (ID_Compra)
+        REFERENCES Compras (ID_Compra) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- BOLETO
+-- =========================
+CREATE TABLE Boleto (
+    ID_Pag INT NOT NULL,
+    Vencimento_Boleto DATE NOT NULL,
+    Codigo INT NOT NULL,
+    Favorecido VARCHAR(100) NOT NULL,
+    Valor_Boleto NUMERIC(100,2),
+    Pagador VARCHAR(100),
+    CONSTRAINT PK_Boleto PRIMARY KEY (ID_Pag),
+    CONSTRAINT UK_Cod UNIQUE (Codigo),
+    CONSTRAINT FK_DepositoBoleto FOREIGN KEY (ID_Pag)
+        REFERENCES Deposito (ID_Pag) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- =========================
+-- INVESTIMENTO
+-- =========================
+CREATE TABLE Investimento (
+    ID_Pag INT NOT NULL,
+    Tipo_Invest VARCHAR(100) NOT NULL,
+    Rentabilidade INT NOT NULL,
+    CONSTRAINT PK_Investimento PRIMARY KEY (ID_Pag),
+    CONSTRAINT FK_DepositoInvest FOREIGN KEY (ID_Pag)
+        REFERENCES Deposito (ID_Pag) ON UPDATE CASCADE ON DELETE CASCADE
+);
