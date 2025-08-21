@@ -5,7 +5,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'database': 'TP2',
     'user': 'postgres',
-    'password': '12345',
+    'password': '27028922',
     'port': '5432'
 }
 
@@ -13,6 +13,7 @@ def get_db_connection():
     """
     Retorna uma conexão com o banco de dados usando o DB_CONFIG.
     """
+    
     return psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
 
 # 1. Abre uma conexão com o banco usando as configurações do DB_CONFIG.
@@ -45,3 +46,19 @@ def execute_sql(query, params=None, fetch=False, fetch_one=False):
     finally:
         cursor.close()
         conn.close()
+        
+def testar_conexao():
+    """
+    Testa a conexão com o banco de dados e retorna True se conectar, False caso contrário.
+    """
+    try:
+        conn = get_db_connection()
+        conn.close()
+        print("Conexão bem-sucedida!")
+        return True
+    except Exception as e:
+        print(f"Erro ao conectar: {e}")
+        return False
+
+if __name__ == "__main__":
+    testar_conexao()

@@ -1,10 +1,616 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Página Inicial</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Área do Cliente • Demo</title>
+  <style>
+    :root{
+      --bg:#0f172a;       /* slate-900 */
+      --panel:#111827;      /* gray-900 */
+      --panel-2:#0b1222;    
+      --text:#e5e7eb;      /* gray-200 */
+      --sub:#94a3b8;       /* slate-400 */
+      --brand:#22c55e;      /* green-500 */
+      --brand-600:#16a34a;
+      --danger:#ef4444;    /* red-500 */
+      --warn:#f59e0b;      /* amber-500 */
+      --ok:#10b981;        /* emerald-500 */
+      --border:#1f2937;    /* gray-800 */
+      --muted:#0b1222;
+      --chip:#1f2937;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:linear-gradient(180deg,#0b1020 0%, #0b0f1a 50%, #0a0d18 100%);
+      color:var(--text);font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+    }
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .grid{display:grid;gap:18px}
+    .btn{appearance:none;border:0;border-radius:12px;padding:12px 16px;background:var(--brand);color:white;font-weight:600;cursor:pointer;transition:.2s transform ease,.2s background-color ease}
+    .btn:hover{background:var(--brand-600);transform:translateY(-1px)}
+    .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .row{display:flex;gap:10px;align-items:center}
+    input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--text);outline:none}
+    label{display:block;margin:6px 0 8px;color:var(--sub);font-size:.9rem}
+    .center{text-align:center}
+    .muted{color:var(--sub)}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--border);font-size:.8rem}
+
+    /* Login */
+    #login{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .login-card{display:grid;grid-template-columns:1.2fr 1fr;overflow:hidden}
+    .login-hero{padding:28px;background:radial-gradient(1000px 500px at 20% -10%, rgba(34,197,94,.25), transparent 60%),
+                radial-gradient(800px 400px at 110% 110%, rgba(59,130,246,.25), transparent 60%),
+                linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+                }
+    .login-hero h1{margin:0 0 10px;font-size:2rem}
+    .login-hero p{margin:0;color:var(--sub)}
+    .login-form{padding:28px;background:linear-gradient(180deg,rgba(15,23,42,.8), rgba(2,6,23,.8));backdrop-filter:blur(6px)}
+    .login-form h2{margin:0 0 12px}
+    .divider{height:1px;background:var(--border);margin:16px 0}
+    .help{display:flex;justify-content:space-between;align-items:center}
+
+    /* App */
+    #app{display:none;min-height:100vh}
+    .app-shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    aside{border-right:1px solid var(--border);padding:18px;position:sticky;top:0;height:100vh}
+    aside .logo{font-weight:800;letter-spacing:.3px;margin-bottom:18px}
+    nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;margin:4px 0;border-radius:12px;color:var(--text);text-decoration:none;border:1px solid transparent}
+    nav a.active, nav a:hover{background:var(--panel-2);border-color:var(--border)}
+    main{padding:22px}
+    header.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .search{max-width:360px;flex:1}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .stat{padding:16px}
+    .stat h3{margin:0 0 6px;font-size:.9rem;color:var(--sub)}
+    .stat strong{font-size:1.4rem}
+
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:12px;border-bottom:1px solid var(--border);text-align:left}
+    .status{padding:6px 10px;border-radius:999px;font-size:.8rem;border:1px solid var(--border)}
+    .status.pago{background:rgba(16,185,129,.1)}
+    .status.pendente{background:rgba(245,158,11,.08)}
+    .status.atrasado{background:rgba(239,68,68,.08)}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    .toolbar input{max-width:280px}
+
+    .hidden{display:none !important}
+
+    @media (max-width: 980px){
+      .login-card{grid-template-columns:1fr}
+      .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .app-shell{grid-template-columns:1fr}
+      aside{position:relative;height:auto}
+    }
+    @media (max-width: 580px){
+      .cards{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-    <!-- Conteúdo da página vai aqui -->
+  <section id="login" class="container">
+    <div class="card login-card" role="dialog" aria-labelledby="tituloLogin" aria-describedby="subLogin">
+      <div class="login-hero">
+        <div class="chip" aria-hidden="true">🏦 Simulador Bancário</div>
+        <h1 id="tituloLogin">Bem-vindo à sua Área do Cliente</h1>
+        <p id="subLogin">Acompanhe compras, faturas, assinaturas e muito mais em um só lugar.</p>
+        <div class="divider"></div>
+        <ul class="muted">
+          <li>• Autenticação simples (demo)</li>
+          <li>• Layout responsivo e acessível</li>
+        </ul>
+      </div>
+      <form class="login-form" id="formLogin" autocomplete="on">
+        <h2>Entrar</h2>
+        <div class="row" style="gap:8px">
+          <div style="flex:1">
+            <label for="id">ID do Cliente</label>
+            <input id="id" name="id" type="number" placeholder="ID do Cliente" required />
+          </div>
+        </div>
+        <label for="cpf">CPF</label>
+        <input id="cpf" name="cpf" type="text" placeholder="XXX.XXX.XXX-XX" required />
+        <div class="divider"></div>
+        <button class="btn" type="submit">Acessar</button>
+        <p class="muted" style="margin-top:10px">Dica: use seu userID e o seu CPF para testar!</p>
+      </form>
+    </div>
+  </section>
+
+  <section id="app">
+    <div class="app-shell">
+      <aside>
+        <div class="logo">🏦 Painel do Cliente</div>
+        <div class="row" style="justify-content:space-between">
+          <span class="chip" id="chipUser">👤 —</span>
+          <button class="btn ghost" id="btnLogout" title="Sair">Sair</button>
+        </div>
+        <div class="divider" style="margin:14px 0"></div>
+        <nav aria-label="Menu principal">
+          <a href="#" data-page="overview" class="active">🏠 Visão Geral</a>
+          <a href="#" data-page="compras">🧾 Compras</a>
+          <a href="#" data-page="faturas">💳 Faturas</a>
+          <a href="#" data-page="perfil">⚙️ Perfil</a>
+        </nav>
+      </aside>
+      <main>
+        <header class="topbar">
+          <input class="search" id="searchGlobal" placeholder="Pesquisar em tudo… (demo)"/>
+          <div class="row">
+            <button class="btn ghost" id="btnDark">Alternar tema</button>
+          </div>
+        </header>
+
+        <section id="page-overview">
+          <div class="cards">
+            <div class="card stat"><h3>Gasto do mês</h3><strong id="statGasto">—</strong><div class="muted">Atualizado agora</div></div>
+            <div class="card stat"><h3>Faturas pendentes</h3><strong id="statPend">—</strong></div>
+            <div class="card stat"><h3>Assinaturas ativas</h3><strong id="statAssin">—</strong></div>
+            <div class="card stat"><h3>Último login</h3><strong id="statLogin">—</strong></div>
+          </div>
+          <div style="height:14px"></div>
+          <div class="card" style="padding:16px">
+            <div class="toolbar">
+              <strong>Movimentações recentes</strong>
+            </div>
+            <table class="table" id="tblRecentes" aria-label="Tabela de movimentações recentes"></table>
+          </div>
+        </section>
+
+        <section id="page-compras" class="hidden">
+          <div class="card" style="padding:16px">
+            <div class="toolbar">
+              <input id="filtroCompras" placeholder="Filtrar por descrição ou loja"/>
+              <select id="filtroStatusCompra">
+                <option value="">Todos status</option>
+                <option value="pago">Pago</option>
+                <option value="pendente">Pendente</option>
+                <option value="estornado">Estornado</option>
+              </select>
+              <button class="btn" id="btnNovaCompra">Nova compra (demo)</button>
+            </div>
+            <table class="table" id="tblCompras" aria-label="Tabela de compras"></table>
+          </div>
+        </section>
+
+        <section id="page-faturas" class="hidden">
+          <div class="card" style="padding:16px">
+            <div class="toolbar">
+              <select id="filtroFatura">
+                <option value="">Todas</option>
+                <option value="pago">Pagas</option>
+                <option value="pendente">Pendentes</option>
+                <option value="atrasado">Atrasadas</option>
+              </select>
+              <button class="btn" id="btnGerarBoleto">Gerar boleto (demo)</button>
+            </div>
+            <table class="table" id="tblFaturas" aria-label="Tabela de faturas"></table>
+          </div>
+        </section>
+
+        <section id="page-assinaturas" class="hidden">
+          <div class="card" style="padding:16px">
+            <p class="muted">Assinaturas ativas e histórico (demo).</p>
+            <table class="table" id="tblAssinaturas"></table>
+          </div>
+        </section>
+
+        <section id="page-suporte" class="hidden">
+          <div class="card" style="padding:16px">
+            <h3>Abrir atendimento</h3>
+            <div class="grid" style="grid-template-columns:1fr 1fr">
+              <div>
+                <label>Assunto</label>
+                <input id="supAssunto" placeholder="Ex.: Dúvida sobre fatura"/>
+              </div>
+              <div>
+                <label>Categoria</label>
+                <select id="supCat">
+                  <option>Dúvidas</option>
+                  <option>Problemas técnicos</option>
+                  <option>Financeiro</option>
+                </select>
+              </div>
+            </div>
+            <label>Descrição</label>
+            <textarea id="supDesc" rows="5" style="width:100%;resize:vertical;padding:12px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--text)"></textarea>
+            <div class="row" style="justify-content:flex-end;margin-top:10px">
+              <button class="btn" id="btnAbrirChamado">Enviar</button>
+            </div>
+            <div class="divider"></div>
+            <h3>Meus chamados</h3>
+            <table class="table" id="tblChamados"></table>
+          </div>
+        </section>
+
+        <section id="page-perfil" class="hidden">
+          <div class="card" style="padding:16px">
+            <h3>Dados do perfil</h3>
+            <div class="grid" style="grid-template-columns:1fr 1fr">
+              <div>
+                <label>CPF</label>
+                <input id="pfcpf" />
+              </div>
+              <div>
+                <label>Telefone</label>
+                <input id="pfTelefone" />
+              </div>
+            </div>
+            <label>Nome</label>
+            <input id="pfNome" />
+            <div class="row" style="justify-content:flex-end;margin-top:10px">
+              <button class="btn" id="btnSalvarPerfil">Salvar alterações</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </section>
+
+  <script>
+    // ====== Dados de demonstração ======
+    // Substitua seedData por uma função assíncrona que busca do backend
+const fetchDataFromBackend = async (id_cliente, cpf) => {
+  try {
+    const [usuario, compras, faturas] = await Promise.all([
+      fetch(`/api/usuario/${id_cliente}?cpf=${cpf}`).then(r => r.json()),
+      fetch(`/api/compras/${id_cliente}`).then(r => r.json()),
+      fetch(`/api/faturas/${id_cliente}`).then(r => r.json()),
+    ]);
+    return {
+      usuario,
+      compras: compras || [],
+      faturas: faturas || [],
+      assinaturas: usuario.assinaturas || [],
+      chamados: usuario.chamados || []
+    };
+  } catch (err) {
+    console.error('Erro ao buscar dados:', err);
+    alert('Erro ao carregar dados. Veja o console.');
+    return null;
+  }
+};
+
+// Exemplo de uso na inicialização:
+let db = null;
+async function initApp() {
+  const id_cliente = window.localStorage.getItem('demo_id');
+  const cpf = window.localStorage.getItem('demo_cpf');
+  db = await fetchDataFromBackend(id_cliente, cpf);
+  renderAll();
+}
+
+    // ====== Util ======
+    const R$ = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    const el = id => document.getElementById(id);
+    const qs = sel => document.querySelector(sel);
+    const setActive = page => {
+      document.querySelectorAll('nav a').forEach(a=>{
+        a.classList.toggle('active', a.dataset.page === page);
+      });
+      document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));
+      el('page-'+page).classList.remove('hidden');
+    }
+
+    // ====== Estado ======
+    db = null;
+
+    function persist(){ localStorage.setItem('demo_db', JSON.stringify(db)); }
+
+
+    // ====== Render ======
+    function renderHeader(){
+      el('chipUser').textContent = '👤 ' + db.usuario.nome;
+      el('statLogin').textContent = new Date().toLocaleString('pt-BR');
+    }
+
+    function renderAssinaturas() {
+      const tbl = el('tblAssinaturas');
+      if (!Array.isArray(db.assinaturas)) {
+        tbl.innerHTML = '<tbody><tr><td colspan="4">Nenhuma assinatura encontrada.</td></tr></tbody>';
+        return;
+      }
+
+      const linhas = db.assinaturas.map(a => `
+        <tr>
+          <td>${a.nome}</td>
+          <td>${a.inicio}</td>
+          <td>${R$(a.valor)}</td>
+          <td><span class="status ${a.status.toLowerCase()}">${a.status}</span></td>
+        </tr>
+      `).join('');
+
+      tbl.innerHTML = `
+        <thead><tr><th>Serviço</th><th>Início</th><th>Valor</th><th>Status</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      `;
+    }
+
+    function renderChamados() {
+      const tbl = el('tblChamados');
+      if (!Array.isArray(db.chamados)) {
+        tbl.innerHTML = '<tbody><tr><td colspan="4">Nenhum chamado encontrado.</td></tr></tbody>';
+        return;
+      }
+
+      const linhas = db.chamados.map(c => `
+        <tr>
+          <td>${c.id}</td>
+          <td>${c.criado}</td>
+          <td>${c.assunto}</td>
+          <td><span class="status">${c.status}</span></td>
+        </tr>
+      `).join('');
+
+      tbl.innerHTML = `
+        <thead><tr><th>ID</th><th>Criado em</th><th>Assunto</th><th>Status</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      `;
+    }
+
+    function renderPerfil() {
+      el('pfNome').value = db.usuario.nome || '';
+      el('pfcpf').value = db.usuario.cpf || '';
+      el('pfTelefone').value = db.usuario.telefone || '';
+    }
+
+    function renderOverview(){
+      const mesAtual = new Date().toISOString().slice(0,7); // yyyy-mm
+      const gastoMes = db.compras
+        .filter(c => c.data.slice(0,7) === mesAtual)
+        .reduce((acc,c)=>acc+c.valor,0);
+      el('statGasto').textContent = R$(gastoMes);
+      el('statPend').textContent = db.faturas.filter(f=>f.status==='pendente' || f.status==='atrasado').length;
+      el('statAssin').textContent = db.assinaturas.filter(a=>a.status==='Ativa').length;
+
+      const tbl = el('tblRecentes');
+      const linhas = db.compras
+        .slice()
+        .sort((a,b)=> b.data.localeCompare(a.data))
+        .slice(0,5)
+        .map(c=>`<tr><td>${c.data}</td><td>${c.loja}</td><td>${c.descricao}</td><td>${R$(c.valor)}</td><td><span class="status ${c.status}">${c.status}</span></td></tr>`)
+        .join('');
+      tbl.innerHTML = `<thead><tr><th>Data</th><th>Loja</th><th>Descrição</th><th>Valor</th><th>Status</th></tr></thead><tbody>${linhas}</tbody>`;
+    }
+
+    function renderCompras(){
+      const filtro = el('filtroCompras').value.toLowerCase();
+      const fStatus = el('filtroStatusCompra').value;
+      const dados = db.compras.filter(c=>{
+        const matchTexto = (c.descricao + ' ' + c.loja).toLowerCase().includes(filtro);
+        const matchStatus = !fStatus || c.status===fStatus;
+        return matchTexto && matchStatus;
+      });
+      const linhas = dados
+        .sort((a,b)=> b.data.localeCompare(a.data))
+        .map(c=>`<tr>
+          <td>${c.id}</td><td>${c.data}</td><td>${c.loja}</td><td>${c.descricao}</td>
+          <td>${R$(c.valor)}</td>
+          <td><span class="status ${c.status}">${c.status}</span></td>
+        </tr>`).join('');
+      el('tblCompras').innerHTML = `<thead><tr><th>#</th><th>Data</th><th>Loja</th><th>Descrição</th><th>Valor</th><th>Status</th></tr></thead><tbody>${linhas}</tbody>`;
+    }
+
+    function renderFaturas(){
+      const f = el('filtroFatura').value;
+      const dados = db.faturas.filter(x=>!f || x.status===f);
+      const linhas = dados
+        .sort((a,b)=> a.vencimento.localeCompare(b.vencimento))
+        .map(f=>`<tr>
+          <td>${f.id}</td><td>${f.vencimento}</td><td>${R$(f.valor)}</td>
+          <td><span class="status ${f.status}">${f.status}</span></td>
+          <td><button class="btn ghost" onclick="alert('Baixando ${f.id} — demo')">Baixar</button></td>
+        </tr>`).join('');
+      el('tblFaturas').innerHTML = `<thead><tr><th>#</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody>${linhas}</tbody>`;
+    }
+
+    function renderPerfil(){
+      el('pfNome').value = db.usuario.nome;
+      el('pfcpf').value = db.usuario.cpf;
+      el('pfTelefone').value = db.usuario.telefone;
+    }
+
+    function login(id, cpf) {
+      window.localStorage.setItem('demo_id', id);
+      window.localStorage.setItem('demo_cpf', cpf);
+    }
+
+    function logout(){
+      window.localStorage.removeItem('demo_cpf');
+      window.localStorage.removeItem('demo_id');
+    }
+
+    
+
+    function renderAll(){
+      renderHeader();
+      renderOverview();
+      renderCompras();
+      renderFaturas();
+      renderAssinaturas();
+      renderChamados();
+      renderPerfil();
+      setActive('overview');
+    }
+
+    function FormatCPF(cpf) {
+      return cpf.replace(/\D/g, '');
+    }
+
+    // ====== Eventos ======
+    // Login submit
+    // Código corrigido para o evento de submit
+el('formLogin').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const id = el('id').value.trim();
+    const cpf = FormatCPF(el('cpf').value.trim());
+    //console.log(id + cpf)
+    if(!id || !cpf){ alert('Preencha ID e CPF.'); return; }
+
+    const data = await fetchDataFromBackend(id, cpf);
+
+    if (!data.usuario || !data.usuario.nome) {
+        alert('Credenciais erradas');
+        logout();
+        switchToLogin();
+        el('id').value = '';
+        el('cpf').value = '';
+        return;
+    }
+
+    // Armazena o ID do cliente para manter a sessão
+
+    login(id,cpf);
+    db = data;
+    switchToApp();
+    renderAll();
+});
+
+    // Navegação lateral
+    document.querySelectorAll('nav a').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        setActive(a.dataset.page);
+      });
+    });
+
+    // Filtros e ações
+    el('filtroCompras').addEventListener('input', renderCompras);
+    el('filtroStatusCompra').addEventListener('change', renderCompras);
+    el('filtroFatura').addEventListener('change', renderFaturas);
+
+    el('btnNovaCompra').addEventListener('click', async ()=>{
+      const id_cliente = window.localStorage.getItem('demo_id');
+      const novaCompra = {
+        loja: 'Loja Demo',
+        descricao: 'Item aleatório',
+        valor: (50+Math.random()*400).toFixed(2),
+        status: 'pendente',
+        data: new Date().toISOString().slice(0,10)
+      };
+      const res = await fetch(`/api/compras/${id_cliente}/nova`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novaCompra)
+      });
+      if(res.ok) {
+        const json = await res.json();
+        console.log('Compra adicionada:', json);
+        db.compras.push({ ...novaCompra, id:json.id });
+        persist();
+        renderCompras();
+        renderOverview();
+      } else {
+        const err = await res.json();
+        alert('Erro ao adicionar compra: ' + (err.erro || 'Desconhecido'));
+      }
+    });
+
+    el('btnGerarBoleto').addEventListener('click', ()=>{
+      alert('Boleto/PIX gerado (simulado).');
+    });
+
+    el('btnAbrirChamado').addEventListener('click', ()=>{
+      const assunto = el('supAssunto').value.trim();
+      const desc = el('supDesc').value.trim();
+      if(!assunto || !desc){ alert('Preencha assunto e descrição.'); return; }
+      const id = 'CH-' + Math.floor(200 + Math.random()*800);
+      const criado = new Date().toLocaleString('pt-BR');
+      db.chamados.unshift({ id, criado, assunto, status:'Aberto' });
+      el('supAssunto').value=''; el('supDesc').value='';
+      persist(); renderChamados();
+    });
+
+    el('btnSalvarPerfil').addEventListener('click', async () => {
+      const payload = {
+        nome: el('pfNome').value,
+        cpf: el('pfcpf').value,
+        telefone: el('pfTelefone').value
+      };
+
+      try {
+        const res = await fetch(`/api/usuario/${db.usuario.id_cliente}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+
+          login(json.id_cliente,json.cpf)
+
+          // Atualiza dados locais
+          db.usuario = {
+            ...db.usuario,
+            nome: payload.nome,
+            telefone: payload.telefone,
+            cpf: json.cpf,
+            id_cliente: json.id_cliente // Garantia
+          };
+
+          persist(); // salva no localStorage
+          renderHeader();
+          alert('Perfil atualizado!');
+        } else {
+          alert('Erro ao atualizar perfil');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro de conexão com o servidor');
+      }
+    });
+
+    el('btnLogout').addEventListener('click', ()=>{ logout(); switchToLogin(); });
+
+    // Tema
+    el('btnDark').addEventListener('click', ()=>{
+      document.body.classList.toggle('light');
+    });
+
+    // Tema claro opcional
+    const style = document.createElement('style');
+    style.textContent = `
+      body.light{ background:linear-gradient(180deg,#f0f4ff,#ffffff); color:#0f172a }
+      body.light .card{ background:#fff; border-color:#e5e7eb; }
+      body.light input, body.light select, body.light textarea{ background:#fff; color:#0f172a; border-color:#e5e7eb }
+      body.light nav a.active, body.light nav a:hover{ background:#f8fafc; border-color:#e5e7eb }
+      body.light .chip{ background:#f1f5f9; border-color:#e5e7eb; color:#0f172a }
+      body.light .status.pago{ background:#ecfdf5 }
+      body.light .status.pendente{ background:#fffbeb }
+      body.light .status.atrasado{ background:#fef2f2 }
+    `;
+    document.head.appendChild(style);
+
+    // ====== Bootstrap ======
+    if(isAuth()) {
+      initApp().then(switchToApp);
+    } else {
+      switchToLogin();
+    }
+
+function isAuth() {
+  return !!window.localStorage.getItem('demo_id');
+}
+
+function switchToApp() {
+  el('login').style.display = 'none';
+  el('app').style.display = 'block';
+}
+
+function switchToLogin() {
+  el('login').style.display = 'block';
+  el('app').style.display = 'none';
+}
+  </script>
 </body>
 </html>
