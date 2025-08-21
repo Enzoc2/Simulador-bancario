@@ -46,7 +46,6 @@ def execute_sql(query, params=None, fetch=False, fetch_one=False):
     finally:
         cursor.close()
         conn.close()
-        
 def testar_conexao():
     """
     Testa a conexão com o banco de dados e retorna True se conectar, False caso contrário.
@@ -62,3 +61,4 @@ def testar_conexao():
 
 if __name__ == "__main__":
     testar_conexao()
+
