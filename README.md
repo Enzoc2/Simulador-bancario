@@ -1,4 +1,3 @@
-Aqui está o seu **README.md** já formatado para colocar direto no GitHub:
 
 ```markdown
 # 💳 Simulador Bancário com Python e Flask
