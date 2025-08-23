@@ -23,7 +23,7 @@ A arquitetura segue o padrão **Application Factory**, promovendo um código mai
 ## 🛠️ Tecnologias Utilizadas
 - **Backend**: Python 3.9+  
 - **Framework**: Flask  
-- **Banco de Dados**: SQLite (com suporte a PostgreSQL/MySQL via SQLAlchemy)  
+- **Banco de Dados**: PostgreSQL
 - **ORM**: Flask-SQLAlchemy  
 - **Autenticação**: Flask-Login  
 - **Frontend**: HTML, CSS  
@@ -112,9 +112,7 @@ http://127.0.0.1:5000
 
 ## 🗄️ Banco de Dados
 
-* O projeto utiliza **SQLite** como banco padrão (criado automaticamente).
-* A estrutura completa das tabelas e relacionamentos está documentada em `estrutura_do_bd.txt`.
-* Graças ao **SQLAlchemy**, pode ser facilmente adaptado para **PostgreSQL** ou **MySQL**.
+* O projeto utiliza **PostgreSQL**
 
 ---
 
